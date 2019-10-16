@@ -13,7 +13,7 @@ class Tile extends Entity{
 		super(x,y);
 		tileType = type;
 		if(tileType == 0) {
-			addImageWithBoundingBox(ResourceManager.getImage("white.png"));
+		//	addImageWithBoundingBox(ResourceManager.getImage("white.png"));
 		}
 		else if(tileType == 1) {
 			addImageWithBoundingBox(ResourceManager.getImage("black.png"));

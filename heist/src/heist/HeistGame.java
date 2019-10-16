@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -28,6 +29,8 @@ public class HeistGame extends BasicGame {
 
 	@Override
 	public void render(GameContainer container, Graphics g) throws SlickException {
+		g.setColor(Color.white);
+		g.fillRect(0, 0, 800, 600);
 	//	if(!mapIsLoaded) {
 			for(int i = 0; i<15; i++) {
 				int j = 0;
