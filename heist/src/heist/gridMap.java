@@ -7,23 +7,24 @@ import java.io.IOException;
 
 public class gridMap {
 	
-	public int[][] map;
-	
+	public Tile[][] tiles;
 	public gridMap(String mapTitle) throws IOException {
 		
-		map = new int[15][20];
+		tiles = new Tile[15][20];
 		File file = new File(mapTitle);
 		FileReader fr = new FileReader(file);
 		BufferedReader br = new BufferedReader(fr);
 		int c = 0;
 		for(int i = 0; i <15; i++) {
-			for(int j = 0; j<20; j++) {
+			int j = 0;
+			for(; j<21; j++) {
 				c = br.read();
 				char character = (char) c;
-				
-				if(character == '\n') break;
+				if(character == '\n') {
+					break;
+				}
 				else{
-					map[i][j] = Character.getNumericValue(c);
+					tiles[i][j] = new Tile((float)40*j+20, (float)40*i+20, Character.getNumericValue(c));
 				}
 			}
 		}

@@ -8,32 +8,51 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 
+import jig.Entity;
+import jig.ResourceManager;
+
 public class HeistGame extends BasicGame {
 	
 	public gridMap map;
-	
+	public boolean mapIsLoaded;
+	private String mapName;
 
 	public HeistGame(String title, int width, int height, String mapTitle) {
 		super(title);
-		try {
-			map = new gridMap(mapTitle);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		 
+		Entity.setCoarseGrainedCollisionBoundary(Entity.AABB);		
+		mapIsLoaded = false;
+		mapName = mapTitle;
 		
 	}
 
+
 	@Override
 	public void render(GameContainer container, Graphics g) throws SlickException {
-		// TODO Auto-generated method stub
+	//	if(!mapIsLoaded) {
+			for(int i = 0; i<15; i++) {
+				int j = 0;
+				for(; j<20; j++) {
+					map.tiles[i][j].render(g);
+				}
+			}
+		//	mapIsLoaded = true;
+	//	}
+		
+		
 		
 	}
 
 	@Override
 	public void init(GameContainer container) throws SlickException {
-		// TODO Auto-generated method stub
-		
+		ResourceManager.loadImage("black.png");
+		ResourceManager.loadImage("white.png");
+		ResourceManager.loadImage("yellow.png");
+		ResourceManager.loadImage("blue.png");
+		try {
+			map = new gridMap(mapName);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -45,7 +64,7 @@ public class HeistGame extends BasicGame {
 	public static void main(String[] args) {
 		AppGameContainer app;
 		try {
-			app = new AppGameContainer(new HeistGame("Heist", 800, 600, "testMap"));
+			app = new AppGameContainer(new HeistGame("Heist", 800, 600, "resources/testMap.txt"));
 			app.setDisplayMode(800, 600, false);
 			app.start();
 		}	catch (SlickException e) {
