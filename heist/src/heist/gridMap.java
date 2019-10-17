@@ -24,7 +24,7 @@ public class gridMap {
 					break;
 				}
 				else{
-					tiles[i][j] = new Tile((float)40*j+20, (float)40*i+20, Character.getNumericValue(c));
+					tiles[i][j] = new Tile((float)40*j+20, (float)40*i+20, Character.getNumericValue(character));
 				}
 			}
 		}
