@@ -17,17 +17,26 @@ import jig.Vector;
 public class HeistGame extends BasicGame {
 	
 	public gridMap map;
-	public boolean mapIsLoaded;
 	private String mapName;
 	private PlayerCharacter player;
+	private int yellow;
+	private int blue;
+	private boolean found;
 
 	public HeistGame(String title, int width, int height, String mapTitle) {
 		super(title);
 		Entity.setCoarseGrainedCollisionBoundary(Entity.AABB);		
-		mapIsLoaded = false;
 		mapName = mapTitle;
+		yellow = 0;
+		blue = 0;
+		found = false;
 	}
 
+	
+	private void playerFound() {
+		found = true;
+	}
+	
 
 	@Override
 	public void render(GameContainer container, Graphics g) throws SlickException {
@@ -40,6 +49,8 @@ public class HeistGame extends BasicGame {
 			}
 		}
 		player.render(g);
+		g.drawString("Yellow Pickups: "+yellow+"/2", 150, 10);
+		g.drawString("Blue Pickups: "+blue+"/1", 400, 10);
 	}
 
 	@Override
@@ -73,6 +84,21 @@ public class HeistGame extends BasicGame {
 		mapY = (int) Math.floor(pos.getY()/40); //convert player position in pixels into grid coordinates
 		int caseHolder = 0;
 		
+		//Checks for handling loot pickups
+		if(map.tiles[mapY][mapX].tileType == 2) {
+			map.tiles[mapY][mapX].tileType = 0;
+			map.tiles[mapY][mapX].removeImage(ResourceManager.getImage("yellow.png"));
+			yellow++;
+		}
+		
+		if(map.tiles[mapY][mapX].tileType == 3) {
+			map.tiles[mapY][mapX].tileType = 0;
+			map.tiles[mapY][mapX].removeImage(ResourceManager.getImage("blue.png"));
+			blue++;
+			playerFound();
+		}
+		
+		
 		if(posX%40 == 0 && posY%40 == 0) {
 			/*Switch/case statements just to allow for breaking once the player has moved so that turning is
 			 * given priority over continuing straight, and so that other cases are not checked and the player
@@ -82,28 +108,28 @@ public class HeistGame extends BasicGame {
 			case 0:
 				//Ugly if statements are to check if adjacent tiles are legal(inner), and to make sure that the player is actually trying to turn(outer)
 				if (input.isKeyDown(Input.KEY_D) && player.getDirection() != 1 && !input.isKeyDown(Input.KEY_A)) {
-					if(mapX != 19 && map.tiles[mapY]!=null && map.tiles[mapY][mapX+1]!=null && map.tiles[mapY][mapX+1].tileType == 0) {
+					if(mapX != 19 && map.tiles[mapY]!=null && map.tiles[mapY][mapX+1]!=null && map.tiles[mapY][mapX+1].tileType != 1) {
 						player.move(1);
 						break;
 					}
 				}
 			case 1:
 				if (input.isKeyDown(Input.KEY_A) && player.getDirection() != 3 && !input.isKeyDown(Input.KEY_D)) {
-					if(mapX != 0 && map.tiles[mapY]!=null && map.tiles[mapY][mapX-1]!=null && map.tiles[mapY][mapX-1].tileType == 0) {
+					if(mapX != 0 && map.tiles[mapY]!=null && map.tiles[mapY][mapX-1]!=null && map.tiles[mapY][mapX-1].tileType != 1) {
 						player.move(3);
 						break;
 					}
 				}
 			case 2:
 				if (input.isKeyDown(Input.KEY_W) && player.getDirection() != 0 && !input.isKeyDown(Input.KEY_S)) {
-					if(mapY != 0 && map.tiles[mapY-1]!=null && map.tiles[mapY-1][mapX]!=null && map.tiles[mapY-1][mapX].tileType == 0) {
+					if(mapY != 0 && map.tiles[mapY-1]!=null && map.tiles[mapY-1][mapX]!=null && map.tiles[mapY-1][mapX].tileType != 1) {
 						player.move(0);
 						break;
 					}
 				}
 			case 3:
 				if (input.isKeyDown(Input.KEY_S) && player.getDirection() != 2 && !input.isKeyDown(Input.KEY_W)) {
-					if(mapY != 14 && map.tiles[mapY+1]!=null && map.tiles[mapY+1][mapX]!=null && map.tiles[mapY+1][mapX].tileType == 0) {
+					if(mapY != 14 && map.tiles[mapY+1]!=null && map.tiles[mapY+1][mapX]!=null && map.tiles[mapY+1][mapX].tileType != 1) {
 						player.move(2);
 						break;
 					}
@@ -111,28 +137,28 @@ public class HeistGame extends BasicGame {
 			
 			case 4:
 				if (input.isKeyDown(Input.KEY_D) && !input.isKeyDown(Input.KEY_A)) {
-					if(mapX != 19 && map.tiles[mapY]!=null && map.tiles[mapY][mapX+1]!=null && map.tiles[mapY][mapX+1].tileType == 0) {
+					if(mapX != 19 && map.tiles[mapY]!=null && map.tiles[mapY][mapX+1]!=null && map.tiles[mapY][mapX+1].tileType != 1) {
 						player.move(1);
 						break;
 					}
 				}
 			case 5:	
 				if (input.isKeyDown(Input.KEY_A) && !input.isKeyDown(Input.KEY_D)) {
-					if(mapX != 0 && map.tiles[mapY]!=null && map.tiles[mapY][mapX-1]!=null && map.tiles[mapY][mapX-1].tileType == 0) {
+					if(mapX != 0 && map.tiles[mapY]!=null && map.tiles[mapY][mapX-1]!=null && map.tiles[mapY][mapX-1].tileType != 1) {
 						player.move(3);
 						break;
 					}
 				}
 			case 6:
 				if (input.isKeyDown(Input.KEY_W) && !input.isKeyDown(Input.KEY_S)) {
-					if(mapY != 0 && map.tiles[mapY-1]!=null && map.tiles[mapY-1][mapX]!=null && map.tiles[mapY-1][mapX].tileType == 0) {
+					if(mapY != 0 && map.tiles[mapY-1]!=null && map.tiles[mapY-1][mapX]!=null && map.tiles[mapY-1][mapX].tileType != 1) {
 						player.move(0);
 						break;
 					}
 				}
 			case 7:
 				if (input.isKeyDown(Input.KEY_S) && !input.isKeyDown(Input.KEY_W)) {
-					if(mapY != 14 && map.tiles[mapY+1]!=null && map.tiles[mapY+1][mapX]!=null && map.tiles[mapY+1][mapX].tileType == 0) {
+					if(mapY != 14 && map.tiles[mapY+1]!=null && map.tiles[mapY+1][mapX]!=null && map.tiles[mapY+1][mapX].tileType != 1) {
 						player.move(2);
 						break;
 					}	
