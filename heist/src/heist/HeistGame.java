@@ -22,6 +22,7 @@ public class HeistGame extends BasicGame {
 	private int yellow;
 	private int blue;
 	private boolean found;
+	private Guard[] guards;
 
 	public HeistGame(String title, int width, int height, String mapTitle) {
 		super(title);
@@ -30,6 +31,7 @@ public class HeistGame extends BasicGame {
 		yellow = 0;
 		blue = 0;
 		found = false;
+		guards = new Guard[2];
 	}
 
 	
@@ -48,10 +50,12 @@ public class HeistGame extends BasicGame {
 				map.tiles[i][j].render(g);
 			}
 		}
-		
 		player.render(g);
+		for(int i = 0; i<guards.length; i++) {
+			guards[i].render(g);
+		}
 		g.drawString("Yellow Pickups: "+yellow+"/2", 150, 10);
-		g.drawString("Blue Pickups: "+blue+"/1", 400, 10);
+		g.drawString("Blue Pickups: "+blue+"/1", 390, 10);
 	}
 
 	@Override
@@ -61,21 +65,45 @@ public class HeistGame extends BasicGame {
 		ResourceManager.loadImage("yellow.png");
 		ResourceManager.loadImage("blue.png");
 		ResourceManager.loadImage("player.png");
+		ResourceManager.loadImage("guard.png");
 		try {
 			map = new gridMap(mapName);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		player = new PlayerCharacter(20, 300);
+		Coordinates[] path = new Coordinates[8];
+		
+		path[0] = new Coordinates(1,1);
+		path[1] = new Coordinates(2,1);
+		path[2] = new Coordinates(3,1);
+		path[3] = new Coordinates(3,2);
+		path[4] = new Coordinates(3,3);
+		path[5] = new Coordinates(2,3);
+		path[6] = new Coordinates(1,3);
+		path[7] = new Coordinates(1,2);
+		guards[0] = new Guard(path);
+		
+		Coordinates[] path2 = new Coordinates[10];
+		path2[0] = new Coordinates(8,9);
+		path2[1] = new Coordinates(9,9);
+		path2[2] = new Coordinates(10,9);
+		path2[3] = new Coordinates(11,9);
+		path2[4] = new Coordinates(11,10);
+		path2[5] = new Coordinates(11,11);
+		path2[6] = new Coordinates(10,11);
+		path2[7] = new Coordinates(9,11);
+		path2[8] = new Coordinates(8,11);
+		path2[9] = new Coordinates(8,10);
+		guards[1] = new Guard(path2);
 	}
 
 	
 	
 	@Override
 	public void update(GameContainer container, int delta) throws SlickException {
-		
 		Input input = container.getInput();
-		//check what tile the player is in to see what movements are legal
+		//check what tile the player is in to see what movements are legal.
 		Vector pos = player.getPosition();
 		double posX, posY;
 		int mapX, mapY;
@@ -96,7 +124,11 @@ public class HeistGame extends BasicGame {
 			map.tiles[mapY][mapX].tileType = 0;
 			map.tiles[mapY][mapX].removeImage(ResourceManager.getImage("blue.png"));
 			blue++;
-			playerFound();
+			playerFound();	
+		}
+		
+		for(int i = 0; i<guards.length; i++) {
+			guards[i].patrol();
 		}
 		
 		
@@ -181,7 +213,7 @@ public class HeistGame extends BasicGame {
 	public static void main(String[] args) {
 		AppGameContainer app;
 		try {
-			app = new AppGameContainer(new HeistGame("Heist", 800, 600, "resources/testMap.txt"));
+			app = new AppGameContainer(new HeistGame("Heist", 800, 600, "resources/open.txt"));
 			app.setDisplayMode(800, 600, false);
 			app.start();
 		}	catch (SlickException e) {
