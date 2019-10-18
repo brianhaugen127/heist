@@ -48,6 +48,7 @@ public class HeistGame extends BasicGame {
 				map.tiles[i][j].render(g);
 			}
 		}
+		
 		player.render(g);
 		g.drawString("Yellow Pickups: "+yellow+"/2", 150, 10);
 		g.drawString("Blue Pickups: "+blue+"/1", 400, 10);
