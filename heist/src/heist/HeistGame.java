@@ -17,6 +17,7 @@ import jig.Vector;
 public class HeistGame extends BasicGame {
 	
 	public gridMap map;
+	public Graph graph;
 	private String mapName;
 	private PlayerCharacter player;
 	private int yellow;
@@ -32,6 +33,7 @@ public class HeistGame extends BasicGame {
 		blue = 0;
 		found = false;
 		guards = new Guard[2];
+		graph = new Graph();
 	}
 
 	
@@ -39,7 +41,83 @@ public class HeistGame extends BasicGame {
 		found = true;
 	}
 	
+	//Breadth first search method to convert the Tile based gridMap into a Graph for use in Dijkstra's algorithm
+	private Graph convertToGraph(Graph mapGraph, Coordinates location) {
+		int x = location.getX();
+		int y = location.getY();
+		GraphNode thisNode = new GraphNode(location);
 
+		System.out.println("Added node at "+(y+1)+","+(x+1));
+		mapGraph.addNode(location, thisNode);
+		
+		
+		//Then check each legal adjacent spot on the map
+		
+		//Check right
+		if(x < 19 && map.tiles[y][x+1].tileType != 1) {
+			//System.out.println("?");
+			Coordinates newLocation = new Coordinates(x+1, y);
+			//if this adjacent spot is already in the graph, mark these nodes as neighbors
+			if(mapGraph.getNodes().containsKey(newLocation)) {
+				mapGraph.getNodes().get(newLocation).addAdjacent(mapGraph.getNodes().get(location),1);
+				mapGraph.getNodes().get(location).addAdjacent(mapGraph.getNodes().get(newLocation),1);
+			}
+			//Otherwise, call this method on that spot
+			else{
+				convertToGraph(mapGraph, newLocation);
+			}
+		}
+		
+		//Check left
+		if(x > 0 && map.tiles[y][x-1].tileType != 1) {
+			Coordinates newLocation = new Coordinates(x-1, y);
+			//if this adjacent spot is already in the graph, mark these nodes as neighbors
+			if(mapGraph.getNodes().containsKey(newLocation)) {
+				mapGraph.getNodes().get(newLocation).addAdjacent(mapGraph.getNodes().get(location),1);
+				mapGraph.getNodes().get(location).addAdjacent(mapGraph.getNodes().get(newLocation),1);
+			}
+			//Otherwise, call this method on that spot
+			else{
+				convertToGraph(mapGraph, newLocation);
+			}
+		}
+		
+		if(y < 13 && map.tiles[y+1][x].tileType != 1) {
+			Coordinates newLocation = new Coordinates(x, y+1);
+			//if this adjacent spot is already in the graph, mark these nodes as neighbors
+			if(mapGraph.getNodes().containsKey(newLocation)) {
+				mapGraph.getNodes().get(newLocation).addAdjacent(mapGraph.getNodes().get(location),1);
+				mapGraph.getNodes().get(location).addAdjacent(mapGraph.getNodes().get(newLocation),1);
+			}
+			//Otherwise, call this method on that spot
+			else{
+				convertToGraph(mapGraph, newLocation);
+			}
+		}
+		
+		if(y > 0 && map.tiles[y-1][x].tileType != 1) {
+			Coordinates newLocation = new Coordinates(x, y-1);
+			//if this adjacent spot is already in the graph, mark these nodes as neighbors
+			if(mapGraph.getNodes().containsKey(newLocation)) {
+				mapGraph.getNodes().get(newLocation).addAdjacent(mapGraph.getNodes().get(location),1);
+				mapGraph.getNodes().get(location).addAdjacent(mapGraph.getNodes().get(newLocation),1);
+			}
+			//Otherwise, call this method on that spot
+			else{
+				convertToGraph(mapGraph, newLocation);
+			}
+		}
+		
+		
+		
+		
+		//If the game runs slow it probably means that I made this poorly!!!
+		//TODO: check that the game doesn't run slowly
+		
+		return mapGraph;
+	}
+	
+	
 	@Override
 	public void render(GameContainer container, Graphics g) throws SlickException {
 		g.setColor(Color.white);
@@ -71,21 +149,30 @@ public class HeistGame extends BasicGame {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		Coordinates startingPoint = new Coordinates(0,7);
+		convertToGraph(graph, startingPoint);
 		player = new PlayerCharacter(20, 300);
-		Coordinates[] path = new Coordinates[8];
+		Coordinates[] path = new Coordinates[1];
+		graph = graph.dijkstra(graph, graph.getNodes().get(startingPoint));
 		
 		path[0] = new Coordinates(1,1);
+		/*
 		path[1] = new Coordinates(2,1);
+		
 		path[2] = new Coordinates(3,1);
 		path[3] = new Coordinates(3,2);
 		path[4] = new Coordinates(3,3);
 		path[5] = new Coordinates(2,3);
 		path[6] = new Coordinates(1,3);
 		path[7] = new Coordinates(1,2);
+		*/
 		guards[0] = new Guard(path);
 		
-		Coordinates[] path2 = new Coordinates[10];
+		Coordinates[] path2 = new Coordinates[1];
+		
 		path2[0] = new Coordinates(8,9);
+		/*
 		path2[1] = new Coordinates(9,9);
 		path2[2] = new Coordinates(10,9);
 		path2[3] = new Coordinates(11,9);
@@ -95,10 +182,9 @@ public class HeistGame extends BasicGame {
 		path2[7] = new Coordinates(9,11);
 		path2[8] = new Coordinates(8,11);
 		path2[9] = new Coordinates(8,10);
+		*/
 		guards[1] = new Guard(path2);
 	}
-
-	
 	
 	@Override
 	public void update(GameContainer container, int delta) throws SlickException {
@@ -112,6 +198,8 @@ public class HeistGame extends BasicGame {
 		mapX = (int) Math.floor(pos.getX()/40);
 		mapY = (int) Math.floor(pos.getY()/40); //convert player position in pixels into grid coordinates
 		int caseHolder = 0;
+		Coordinates playerLoc = new Coordinates(mapX, mapY);
+		graph = graph.dijkstra(graph, graph.getNodes().get(playerLoc));
 		
 		//Checks for handling loot pickups
 		if(map.tiles[mapY][mapX].tileType == 2) {
@@ -128,7 +216,21 @@ public class HeistGame extends BasicGame {
 		}
 		
 		for(int i = 0; i<guards.length; i++) {
-			guards[i].patrol();
+			if(!found) {//do normal guard patrolling if player isn't found, else...
+				guards[i].patrol(); 
+			}
+			else { //...do dijkstra's and have the guards chase the player
+
+				Vector guardPos = guards[i].getPosition();
+				int guardX, guardY;
+				guardX = (int) Math.floor(guardPos.getX()/40);
+				guardY = (int) Math.floor(guardPos.getY()/40);
+				Coordinates guardLoc = new Coordinates(guardX,guardY);
+				Coordinates[] pathToPlayer = graph.findShortestPath(guardLoc);
+				guards[i].setPath(pathToPlayer);
+				guards[i].setLocation(0);
+				guards[i].patrol();
+			}
 		}
 		
 		
@@ -137,6 +239,7 @@ public class HeistGame extends BasicGame {
 			 * given priority over continuing straight, and so that other cases are not checked and the player
 			 * can only move once and in one direction per frame.
 			 */
+
 			switch(caseHolder) {
 			case 0:
 				//Ugly if statements are to check if adjacent tiles are legal(inner), and to make sure that the player is actually trying to turn(outer)
@@ -213,7 +316,7 @@ public class HeistGame extends BasicGame {
 	public static void main(String[] args) {
 		AppGameContainer app;
 		try {
-			app = new AppGameContainer(new HeistGame("Heist", 800, 600, "resources/open.txt"));
+			app = new AppGameContainer(new HeistGame("Heist", 800, 600, "resources/testMap.txt"));
 			app.setDisplayMode(800, 600, false);
 			app.start();
 		}	catch (SlickException e) {

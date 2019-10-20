@@ -131,9 +131,12 @@ public class Guard extends Entity{
 		}
 	}
 	
-	//alternate method to patrol, called once guards are in chase mode
-	public void chase() {
-		//TODO: Dijkstra's and whatnot
+	
+	public void setPath(Coordinates[] path) {
+		this.path = path;
 	}
 	
+	public void setLocation(int location) {
+		this.location = location;
+	}
 }
