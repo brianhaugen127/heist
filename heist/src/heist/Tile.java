@@ -14,16 +14,16 @@ class Tile extends Entity{
 		super(x,y);
 		tileType = type;
 		if(tileType == 0) {
-		//	addImageWithBoundingBox(ResourceManager.getImage("white.png"));
+			addImageWithBoundingBox(ResourceManager.getImage("Floor.png"));
 		}
 		else if(tileType == 1) {
 			addImageWithBoundingBox(ResourceManager.getImage("black.png"));
 		}
 		else if(tileType == 2) {
-			addImageWithBoundingBox(ResourceManager.getImage("Money.png"));
+			addImageWithBoundingBox(ResourceManager.getImage("Money_Floor.png"));
 		}
 		else if(tileType == 3) {
-			addImageWithBoundingBox(ResourceManager.getImage("diamond.png"));
+			addImageWithBoundingBox(ResourceManager.getImage("Diamond_Floor.png"));
 		}
 	}
 

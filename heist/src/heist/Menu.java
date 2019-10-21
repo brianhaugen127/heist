@@ -3,8 +3,12 @@ package heist;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
 
+import jig.ResourceManager;
+
 public class Menu extends BasicGameState{
 
+	private Image burglar;
+	
 	public Menu(int state) {
 		
 	}
@@ -12,15 +16,16 @@ public class Menu extends BasicGameState{
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		// TODO Auto-generated method stub
-		
+		burglar = ResourceManager.getImage("burglar2.png");
 	}
 
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		// TODO Auto-generated method stub
-		g.drawString("Welcome to Heist!", 50, 75);
-		g.drawString("Press [1] to play level 1", 75, 125);
-		g.drawString("Press [2] to play level 2", 75, 175);
+		burglar.draw(250, 50);
+		g.drawString("Welcome to Heist!", 50, 275);
+		g.drawString("Press [1] to play level 1", 75, 325);
+		g.drawString("Press [2] to play level 2", 75, 375);
 	}
 
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {

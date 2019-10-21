@@ -20,8 +20,17 @@ public class Graph {
 	}
 
 	
-	public Graph dijkstra(Graph graph, GraphNode source){
-
+	public Graph dijkstra(Graph graph, GraphNode source, Guard[] guards){
+		
+		//for each guard
+		for(Guard g: guards) {
+			//for each adjacent node to where this guard is
+			GraphNode guardNode = graph.getNodes().get(g.getCoords());
+			for(Map.Entry<GraphNode, Integer> n :guardNode.getAdjacentNodes().entrySet()) {
+				//look back at the node the guard is on, and increase the distance of that adjacency
+				n.getKey().getAdjacentNodes().put(guardNode, 1000);
+			}
+		}
 		
 		Set<GraphNode> settledNodes = new HashSet<>();
 		Set<GraphNode> unsettledNodes = new HashSet<>();
@@ -54,6 +63,12 @@ public class Graph {
 	
 	
 	public Coordinates[] findShortestPath(Coordinates guardLoc){
+		GraphNode test = nodes.get(guardLoc);
+		if(nodes.get(guardLoc).isShortestPathEmpty()) {
+			Coordinates[] path = new Coordinates[1];
+			path[0] = guardLoc;
+			return path;
+		}
 		List<GraphNode> shortestPath = nodes.get(guardLoc).getShortestPath();
 		Coordinates[] path = new Coordinates[shortestPath.size()+1];
 		path[0] = guardLoc;

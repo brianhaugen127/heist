@@ -11,9 +11,9 @@ public class Guard extends Entity{
 	private Animation walkCycle;
 	Coordinates[] path;
 	boolean lightOn;
-	int direction;
-	int location; // position within the coordinates array
-	int turnTimer;
+	private int direction;
+	private int location; // position within the coordinates array
+	private int turnTimer;
 	
 	public Guard(Coordinates[] path) {
 		lightOn = true;
@@ -38,7 +38,6 @@ public class Guard extends Entity{
 			return location;
 		}
 	}
-	
 	
 	//method called in update for guards to patrol in first phase
 	public void patrol(){
@@ -151,5 +150,35 @@ public class Guard extends Entity{
 	
 	public void setLocation(int location) {
 		this.location = location;
+	}
+	public void setTurnTimer(int time) {
+		this.turnTimer = time;
+	}
+	public int getTurnTimer() {
+		return this.turnTimer;
+	}
+	public void setDirection(int direction) {
+		this.direction = direction;
+		switch(direction) {
+			case 0:
+				this.setRotation(270);
+				break;
+			case 1:
+				this.setRotation(0);
+				break;
+			case 2:
+				this.setRotation(90);
+				break;
+			case 3:
+				this.setRotation(180);
+				break;
+			default:
+				//Should never happen
+		}
+	}
+	public Coordinates getCoords() {
+		int guardY = (int) Math.floor(this.getY()/40);
+		int guardX = (int) Math.floor(this.getX()/40);
+		return new Coordinates(guardX, guardY);
 	}
 }

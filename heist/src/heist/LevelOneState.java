@@ -5,7 +5,7 @@ public class LevelOneState extends Play{
 	public LevelOneState(int state) {
 		super(state);
 		super.setMapName("resources/testMap.txt");
-		
+
 		Coordinates[] path = new Coordinates[4];
 		
 		path[0] = new Coordinates(18,1);

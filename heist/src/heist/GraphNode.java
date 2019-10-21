@@ -42,6 +42,10 @@ public class GraphNode {
 		return shortestPath;
 	}
 	
+	public boolean isShortestPathEmpty() {
+		return shortestPath.size() == 0;
+	}
+	
 	public void setShortestPath(List<GraphNode> shortestPath) {
 		this.shortestPath = shortestPath;
 	}

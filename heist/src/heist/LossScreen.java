@@ -3,24 +3,30 @@ package heist;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
 
+import jig.ResourceManager;
+
 public class LossScreen extends BasicGameState{
 
 	public LossScreen(int state) {
 		
 	}
 	
+	private Image copCar;
+	
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		// TODO Auto-generated method stub
+		copCar = ResourceManager.getImage("copCar.png");
 		
 	}
 
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		// TODO Auto-generated method stub
-		g.drawString("You got busted! Better luck next time.", 50, 75);
-		g.drawString("Press [enter] to return to the menu", 75, 125);
-		g.drawString("Press [escape] to close game", 75, 175);
+		copCar.draw(290, 50);
+		g.drawString("You got busted! Better luck next time.", 50, 225);
+		g.drawString("Press [enter] to return to the menu", 75, 275);
+		g.drawString("Press [escape] to close game", 75, 325);
 	}
 
 	@Override

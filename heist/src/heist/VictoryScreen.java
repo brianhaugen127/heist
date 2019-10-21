@@ -3,8 +3,12 @@ package heist;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.*;
 
+import jig.ResourceManager;
+
 public class VictoryScreen extends BasicGameState{
 
+	private Image moneyPile;
+	
 	public VictoryScreen(int state) {
 		
 	}
@@ -12,15 +16,16 @@ public class VictoryScreen extends BasicGameState{
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		// TODO Auto-generated method stub
-		
+		moneyPile = ResourceManager.getImage("moneyPile.png");
 	}
 
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		// TODO Auto-generated method stub
-		g.drawString("You won! Excellent heisting", 50, 75);
-		g.drawString("Press [enter] to return to the menu", 75, 125);
-		g.drawString("Press [escape] to close game", 75, 175);
+		moneyPile.draw(250, 50);
+		g.drawString("You won! Excellent heisting", 50, 275);
+		g.drawString("Press [enter] to return to the menu", 75, 325);
+		g.drawString("Press [escape] to close game", 75, 375);
 	}
 
 	@Override
