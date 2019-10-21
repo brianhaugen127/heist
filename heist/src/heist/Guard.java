@@ -1,11 +1,14 @@
 package heist;
 
+import org.newdawn.slick.Animation;
+
 import jig.Entity;
 import jig.ResourceManager;
 import jig.Vector;
 
 public class Guard extends Entity{
 
+	private Animation walkCycle;
 	Coordinates[] path;
 	boolean lightOn;
 	int direction;
@@ -13,7 +16,6 @@ public class Guard extends Entity{
 	int turnTimer;
 	
 	public Guard(Coordinates[] path) {
-		addImageWithBoundingBox(ResourceManager.getImage("guard.png"));
 		lightOn = true;
 		this.path = path;
 		location = 0;
@@ -21,6 +23,9 @@ public class Guard extends Entity{
 		setX(path[0].getX()*40+20);
 		setY(path[0].getY()*40+20);
 		direction = 5;
+		walkCycle = new Animation(ResourceManager.getSpriteSheet("officer_walk_stripScaled.png", 40, 40), 0, 0, 7, 0, true, 80, true);
+		addAnimation(walkCycle);
+		walkCycle.setLooping(true);
 	}
 	
 	//helper function to declutter patrol()
@@ -41,6 +46,9 @@ public class Guard extends Entity{
 			turnTimer--;
 			return;
 		}
+		else if(walkCycle.isStopped()) {
+			walkCycle.start();
+		}
 		Vector pos = getPosition();
 		double posX, posY;
 		int mapX, mapY;
@@ -58,7 +66,9 @@ public class Guard extends Entity{
 			if(mapX<path[incLoc(location)].getX()) {
 				if(direction != 1) {
 					direction = 1;
+					this.setRotation(0);
 					turnTimer = 10;
+					walkCycle.stop();
 				}
 				else {
 					setX(getX()+5);
@@ -71,6 +81,7 @@ public class Guard extends Entity{
 			else if(mapX>path[incLoc(location)].getX()){
 				if(direction != 3) {
 					direction = 3;
+					this.setRotation(180);
 					turnTimer = 10;
 				}
 				else {
@@ -84,6 +95,7 @@ public class Guard extends Entity{
 			else if(mapY<path[incLoc(location)].getY()) {
 				if(direction != 2) {
 					direction = 2;
+					this.setRotation(90);
 					turnTimer = 10;
 				}
 				else {
@@ -96,6 +108,7 @@ public class Guard extends Entity{
 			else if(mapY>path[incLoc(location)].getY()) {
 				if(direction != 0) {
 					direction = 0;
+					this.setRotation(270);
 					turnTimer = 10;
 				}
 				else {

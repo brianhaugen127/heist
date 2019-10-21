@@ -1,5 +1,6 @@
 package heist;
 
+
 import jig.Entity;
 import jig.ResourceManager;
 
@@ -19,10 +20,11 @@ class Tile extends Entity{
 			addImageWithBoundingBox(ResourceManager.getImage("black.png"));
 		}
 		else if(tileType == 2) {
-			addImageWithBoundingBox(ResourceManager.getImage("yellow.png"));
+			addImageWithBoundingBox(ResourceManager.getImage("Money.png"));
 		}
 		else if(tileType == 3) {
-			addImageWithBoundingBox(ResourceManager.getImage("blue.png"));
+			addImageWithBoundingBox(ResourceManager.getImage("diamond.png"));
 		}
 	}
+
 }

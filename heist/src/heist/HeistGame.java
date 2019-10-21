@@ -1,322 +1,49 @@
 package heist;
 
-import java.io.IOException;
 
 import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.state.StateBasedGame;
 
 import jig.Entity;
-import jig.ResourceManager;
-import jig.Vector;
 
-public class HeistGame extends BasicGame {
+
+public class HeistGame extends StateBasedGame {
 	
-	public gridMap map;
-	public Graph graph;
-	private String mapName;
-	private PlayerCharacter player;
-	private int yellow;
-	private int blue;
-	private boolean found;
-	private Guard[] guards;
-
-	public HeistGame(String title, int width, int height, String mapTitle) {
+	
+	
+	public static final int menu = 0;
+	public static final int play = 1;
+	public static final int play2 = 2;
+	public static final int lossScreen = 4;
+	public static final int victoryScreen = 5;
+	
+	public HeistGame(String title, int width, int height) {
 		super(title);
-		Entity.setCoarseGrainedCollisionBoundary(Entity.AABB);		
-		mapName = mapTitle;
-		yellow = 0;
-		blue = 0;
-		found = false;
-		guards = new Guard[2];
-		graph = new Graph();
+		Entity.setCoarseGrainedCollisionBoundary(Entity.CIRCLE);	
+		this.addState(new Menu(menu));
+		this.addState(new LevelOneState(play));
+		this.addState(new LevelTwoState(play2));
+		this.addState(new LossScreen(lossScreen));
+		this.addState(new VictoryScreen(victoryScreen));
+	
+
 	}
 
-	
-	private void playerFound() {
-		found = true;
-	}
-	
-	//Breadth first search method to convert the Tile based gridMap into a Graph for use in Dijkstra's algorithm
-	private Graph convertToGraph(Graph mapGraph, Coordinates location) {
-		int x = location.getX();
-		int y = location.getY();
-		GraphNode thisNode = new GraphNode(location);
-
-		System.out.println("Added node at "+(y+1)+","+(x+1));
-		mapGraph.addNode(location, thisNode);
-		
-		
-		//Then check each legal adjacent spot on the map
-		
-		//Check right
-		if(x < 19 && map.tiles[y][x+1].tileType != 1) {
-			//System.out.println("?");
-			Coordinates newLocation = new Coordinates(x+1, y);
-			//if this adjacent spot is already in the graph, mark these nodes as neighbors
-			if(mapGraph.getNodes().containsKey(newLocation)) {
-				mapGraph.getNodes().get(newLocation).addAdjacent(mapGraph.getNodes().get(location),1);
-				mapGraph.getNodes().get(location).addAdjacent(mapGraph.getNodes().get(newLocation),1);
-			}
-			//Otherwise, call this method on that spot
-			else{
-				convertToGraph(mapGraph, newLocation);
-			}
-		}
-		
-		//Check left
-		if(x > 0 && map.tiles[y][x-1].tileType != 1) {
-			Coordinates newLocation = new Coordinates(x-1, y);
-			//if this adjacent spot is already in the graph, mark these nodes as neighbors
-			if(mapGraph.getNodes().containsKey(newLocation)) {
-				mapGraph.getNodes().get(newLocation).addAdjacent(mapGraph.getNodes().get(location),1);
-				mapGraph.getNodes().get(location).addAdjacent(mapGraph.getNodes().get(newLocation),1);
-			}
-			//Otherwise, call this method on that spot
-			else{
-				convertToGraph(mapGraph, newLocation);
-			}
-		}
-		
-		if(y < 13 && map.tiles[y+1][x].tileType != 1) {
-			Coordinates newLocation = new Coordinates(x, y+1);
-			//if this adjacent spot is already in the graph, mark these nodes as neighbors
-			if(mapGraph.getNodes().containsKey(newLocation)) {
-				mapGraph.getNodes().get(newLocation).addAdjacent(mapGraph.getNodes().get(location),1);
-				mapGraph.getNodes().get(location).addAdjacent(mapGraph.getNodes().get(newLocation),1);
-			}
-			//Otherwise, call this method on that spot
-			else{
-				convertToGraph(mapGraph, newLocation);
-			}
-		}
-		
-		if(y > 0 && map.tiles[y-1][x].tileType != 1) {
-			Coordinates newLocation = new Coordinates(x, y-1);
-			//if this adjacent spot is already in the graph, mark these nodes as neighbors
-			if(mapGraph.getNodes().containsKey(newLocation)) {
-				mapGraph.getNodes().get(newLocation).addAdjacent(mapGraph.getNodes().get(location),1);
-				mapGraph.getNodes().get(location).addAdjacent(mapGraph.getNodes().get(newLocation),1);
-			}
-			//Otherwise, call this method on that spot
-			else{
-				convertToGraph(mapGraph, newLocation);
-			}
-		}
-		
-		
-		
-		
-		//If the game runs slow it probably means that I made this poorly!!!
-		//TODO: check that the game doesn't run slowly
-		
-		return mapGraph;
-	}
-	
-	
-	@Override
-	public void render(GameContainer container, Graphics g) throws SlickException {
-		g.setColor(Color.white);
-		g.fillRect(0, 0, 800, 600);
-		for(int i = 0; i<15; i++) {
-			int j = 0;
-			for(; j<20; j++) {
-				map.tiles[i][j].render(g);
-			}
-		}
-		player.render(g);
-		for(int i = 0; i<guards.length; i++) {
-			guards[i].render(g);
-		}
-		g.drawString("Yellow Pickups: "+yellow+"/2", 150, 10);
-		g.drawString("Blue Pickups: "+blue+"/1", 390, 10);
+	public void initStatesList(GameContainer gc) throws SlickException{
+		this.getState(menu).init(gc, this);
+		this.getState(play).init(gc, this);
+		this.getState(play2).init(gc,  this);
+		this.getState(lossScreen).init(gc, this);
+		this.getState(victoryScreen).init(gc, this);
+		this.enterState(menu);
 	}
 
-	@Override
-	public void init(GameContainer container) throws SlickException {
-		ResourceManager.loadImage("black.png");
-		ResourceManager.loadImage("white.png");
-		ResourceManager.loadImage("yellow.png");
-		ResourceManager.loadImage("blue.png");
-		ResourceManager.loadImage("player.png");
-		ResourceManager.loadImage("guard.png");
-		try {
-			map = new gridMap(mapName);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		Coordinates startingPoint = new Coordinates(0,7);
-		convertToGraph(graph, startingPoint);
-		player = new PlayerCharacter(20, 300);
-		Coordinates[] path = new Coordinates[1];
-		graph = graph.dijkstra(graph, graph.getNodes().get(startingPoint));
-		
-		path[0] = new Coordinates(1,1);
-		/*
-		path[1] = new Coordinates(2,1);
-		
-		path[2] = new Coordinates(3,1);
-		path[3] = new Coordinates(3,2);
-		path[4] = new Coordinates(3,3);
-		path[5] = new Coordinates(2,3);
-		path[6] = new Coordinates(1,3);
-		path[7] = new Coordinates(1,2);
-		*/
-		guards[0] = new Guard(path);
-		
-		Coordinates[] path2 = new Coordinates[1];
-		
-		path2[0] = new Coordinates(8,9);
-		/*
-		path2[1] = new Coordinates(9,9);
-		path2[2] = new Coordinates(10,9);
-		path2[3] = new Coordinates(11,9);
-		path2[4] = new Coordinates(11,10);
-		path2[5] = new Coordinates(11,11);
-		path2[6] = new Coordinates(10,11);
-		path2[7] = new Coordinates(9,11);
-		path2[8] = new Coordinates(8,11);
-		path2[9] = new Coordinates(8,10);
-		*/
-		guards[1] = new Guard(path2);
-	}
-	
-	@Override
-	public void update(GameContainer container, int delta) throws SlickException {
-		Input input = container.getInput();
-		//check what tile the player is in to see what movements are legal.
-		Vector pos = player.getPosition();
-		double posX, posY;
-		int mapX, mapY;
-		posX = pos.getX()-20;
-		posY = pos.getY()-20;
-		mapX = (int) Math.floor(pos.getX()/40);
-		mapY = (int) Math.floor(pos.getY()/40); //convert player position in pixels into grid coordinates
-		int caseHolder = 0;
-		Coordinates playerLoc = new Coordinates(mapX, mapY);
-		graph = graph.dijkstra(graph, graph.getNodes().get(playerLoc));
-		
-		//Checks for handling loot pickups
-		if(map.tiles[mapY][mapX].tileType == 2) {
-			map.tiles[mapY][mapX].tileType = 0;
-			map.tiles[mapY][mapX].removeImage(ResourceManager.getImage("yellow.png"));
-			yellow++;
-		}
-		
-		if(map.tiles[mapY][mapX].tileType == 3) {
-			map.tiles[mapY][mapX].tileType = 0;
-			map.tiles[mapY][mapX].removeImage(ResourceManager.getImage("blue.png"));
-			blue++;
-			playerFound();	
-		}
-		
-		for(int i = 0; i<guards.length; i++) {
-			if(!found) {//do normal guard patrolling if player isn't found, else...
-				guards[i].patrol(); 
-			}
-			else { //...do dijkstra's and have the guards chase the player
-
-				Vector guardPos = guards[i].getPosition();
-				int guardX, guardY;
-				guardX = (int) Math.floor(guardPos.getX()/40);
-				guardY = (int) Math.floor(guardPos.getY()/40);
-				Coordinates guardLoc = new Coordinates(guardX,guardY);
-				Coordinates[] pathToPlayer = graph.findShortestPath(guardLoc);
-				guards[i].setPath(pathToPlayer);
-				guards[i].setLocation(0);
-				guards[i].patrol();
-			}
-		}
-		
-		
-		if(posX%40 == 0 && posY%40 == 0) {
-			/*Switch/case statements just to allow for breaking once the player has moved so that turning is
-			 * given priority over continuing straight, and so that other cases are not checked and the player
-			 * can only move once and in one direction per frame.
-			 */
-
-			switch(caseHolder) {
-			case 0:
-				//Ugly if statements are to check if adjacent tiles are legal(inner), and to make sure that the player is actually trying to turn(outer)
-				if (input.isKeyDown(Input.KEY_D) && player.getDirection() != 1 && !input.isKeyDown(Input.KEY_A)) {
-					if(mapX != 19 && map.tiles[mapY]!=null && map.tiles[mapY][mapX+1]!=null && map.tiles[mapY][mapX+1].tileType != 1) {
-						player.move(1);
-						break;
-					}
-				}
-			case 1:
-				if (input.isKeyDown(Input.KEY_A) && player.getDirection() != 3 && !input.isKeyDown(Input.KEY_D)) {
-					if(mapX != 0 && map.tiles[mapY]!=null && map.tiles[mapY][mapX-1]!=null && map.tiles[mapY][mapX-1].tileType != 1) {
-						player.move(3);
-						break;
-					}
-				}
-			case 2:
-				if (input.isKeyDown(Input.KEY_W) && player.getDirection() != 0 && !input.isKeyDown(Input.KEY_S)) {
-					if(mapY != 0 && map.tiles[mapY-1]!=null && map.tiles[mapY-1][mapX]!=null && map.tiles[mapY-1][mapX].tileType != 1) {
-						player.move(0);
-						break;
-					}
-				}
-			case 3:
-				if (input.isKeyDown(Input.KEY_S) && player.getDirection() != 2 && !input.isKeyDown(Input.KEY_W)) {
-					if(mapY != 14 && map.tiles[mapY+1]!=null && map.tiles[mapY+1][mapX]!=null && map.tiles[mapY+1][mapX].tileType != 1) {
-						player.move(2);
-						break;
-					}
-				}
-			
-			case 4:
-				if (input.isKeyDown(Input.KEY_D) && !input.isKeyDown(Input.KEY_A)) {
-					if(mapX != 19 && map.tiles[mapY]!=null && map.tiles[mapY][mapX+1]!=null && map.tiles[mapY][mapX+1].tileType != 1) {
-						player.move(1);
-						break;
-					}
-				}
-			case 5:	
-				if (input.isKeyDown(Input.KEY_A) && !input.isKeyDown(Input.KEY_D)) {
-					if(mapX != 0 && map.tiles[mapY]!=null && map.tiles[mapY][mapX-1]!=null && map.tiles[mapY][mapX-1].tileType != 1) {
-						player.move(3);
-						break;
-					}
-				}
-			case 6:
-				if (input.isKeyDown(Input.KEY_W) && !input.isKeyDown(Input.KEY_S)) {
-					if(mapY != 0 && map.tiles[mapY-1]!=null && map.tiles[mapY-1][mapX]!=null && map.tiles[mapY-1][mapX].tileType != 1) {
-						player.move(0);
-						break;
-					}
-				}
-			case 7:
-				if (input.isKeyDown(Input.KEY_S) && !input.isKeyDown(Input.KEY_W)) {
-					if(mapY != 14 && map.tiles[mapY+1]!=null && map.tiles[mapY+1][mapX]!=null && map.tiles[mapY+1][mapX].tileType != 1) {
-						player.move(2);
-						break;
-					}	
-				}
-			}
-				
-		}else if(posX%40 == 0){
-			if(input.isKeyDown(Input.KEY_W) && !input.isKeyDown(Input.KEY_S)) player.move(0);
-			if(input.isKeyDown(Input.KEY_S) && !input.isKeyDown(Input.KEY_W)) player.move(2);
-		}else if(posY%40 == 0) {
-			if(input.isKeyDown(Input.KEY_A) && !input.isKeyDown(Input.KEY_D)) player.move(3);
-			if(input.isKeyDown(Input.KEY_D) && !input.isKeyDown(Input.KEY_A)) player.move(1);
-		}else {
-			System.out.println(posX + ", " + posY);
-		}
-				
-	}
-	
 	public static void main(String[] args) {
 		AppGameContainer app;
 		try {
-			app = new AppGameContainer(new HeistGame("Heist", 800, 600, "resources/testMap.txt"));
+			app = new AppGameContainer(new HeistGame("Heist", 800, 600));
 			app.setDisplayMode(800, 600, false);
 			app.start();
 		}	catch (SlickException e) {

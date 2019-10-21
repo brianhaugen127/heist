@@ -21,7 +21,7 @@ public class Graph {
 
 	
 	public Graph dijkstra(Graph graph, GraphNode source){
-		source.setDistance(0);
+
 		
 		Set<GraphNode> settledNodes = new HashSet<>();
 		Set<GraphNode> unsettledNodes = new HashSet<>();
@@ -31,7 +31,9 @@ public class Graph {
 		for(Map.Entry<Coordinates, GraphNode> entry :this.getNodes().entrySet()) {
 			List<GraphNode> emptyList = new ArrayList<>();
 			entry.getValue().setShortestPath(emptyList);
+			entry.getValue().setDistance(Integer.MAX_VALUE);
 		}
+		source.setDistance(0);
 		
 		while(unsettledNodes.size() != 0) {
 			GraphNode currentNode = getLowestDistanceNode(unsettledNodes);
