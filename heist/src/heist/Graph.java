@@ -21,7 +21,7 @@ public class Graph {
 
 	
 	public Graph dijkstra(Graph graph, GraphNode source, Guard[] guards){
-		
+		/*
 		//for each guard
 		for(Guard g: guards) {
 			//for each adjacent node to where this guard is
@@ -31,7 +31,7 @@ public class Graph {
 				n.getKey().getAdjacentNodes().put(guardNode, 1000);
 			}
 		}
-		
+		*/
 		Set<GraphNode> settledNodes = new HashSet<>();
 		Set<GraphNode> unsettledNodes = new HashSet<>();
 

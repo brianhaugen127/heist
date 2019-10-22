@@ -16,6 +16,7 @@ public class LossScreen extends BasicGameState{
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		// TODO Auto-generated method stub
+		ResourceManager.loadImage("copCar.png");
 		copCar = ResourceManager.getImage("copCar.png");
 		
 	}
@@ -23,10 +24,10 @@ public class LossScreen extends BasicGameState{
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		// TODO Auto-generated method stub
-		copCar.draw(290, 50);
-		g.drawString("You got busted! Better luck next time.", 50, 225);
-		g.drawString("Press [enter] to return to the menu", 75, 275);
-		g.drawString("Press [escape] to close game", 75, 325);
+		copCar.draw(290, 90);
+		g.drawString("You got busted! Better luck next time.", 50, 275);
+		g.drawString("Press [enter] to return to the menu", 75, 325);
+		g.drawString("Press [escape] to close game", 75, 375);
 	}
 
 	@Override

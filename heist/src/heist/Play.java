@@ -57,7 +57,7 @@ abstract class Play extends BasicGameState{
 				if(Xmod<20) guard.setDirection(1);
 				else guard.setDirection(3);
 			}
-			else guard.setDirection(3);
+			//else guard.setDirection(3);
 			exclamations.add(new Exclamation(guard.getX(), guard.getY()-30));
 		}
 	}
@@ -128,11 +128,6 @@ abstract class Play extends BasicGameState{
 			}
 		}
 		
-		
-		
-		
-		//If the game runs slow it probably means that I made this poorly!!!
-		//TODO: check that the game doesn't run slowly
 		
 		return mapGraph;
 	}

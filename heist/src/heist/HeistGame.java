@@ -3,16 +3,16 @@ package heist;
 
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
 import jig.Entity;
+import jig.ResourceManager;
 
 
 public class HeistGame extends StateBasedGame {
-	
-	
-	
+
 	public static final int menu = 0;
 	public static final int play = 1;
 	public static final int play2 = 2;
@@ -27,7 +27,7 @@ public class HeistGame extends StateBasedGame {
 		this.addState(new LevelTwoState(play2));
 		this.addState(new LossScreen(lossScreen));
 		this.addState(new VictoryScreen(victoryScreen));
-	
+		ResourceManager.setFilterMethod(Image.FILTER_NEAREST);
 
 	}
 
@@ -41,6 +41,8 @@ public class HeistGame extends StateBasedGame {
 	}
 
 	public static void main(String[] args) {
+		
+
 		AppGameContainer app;
 		try {
 			app = new AppGameContainer(new HeistGame("Heist", 800, 600));

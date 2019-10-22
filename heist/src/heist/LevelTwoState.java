@@ -6,39 +6,42 @@ public class LevelTwoState extends Play{
 		super(state);
 
 		super.setMapName("resources/open.txt");
-		Coordinates[] path = new Coordinates[52];
+		Coordinates[] path = new Coordinates[84];
 		int path1c = 0;
-		for(int i = 11; i< 19; i++) {
-			path[path1c++] = new Coordinates(i,1);
+		for(int i = 1; i< 19; i++) {
+			path[path1c++] = new Coordinates(i,3);
 		}
-		System.out.println(path1c);
-		for(int i = 2; i< 14; i++) {
+		for(int i = 4; i< 12; i++) {
 			path[path1c++] = new Coordinates(18,i);
 		}
-		System.out.println(path1c);
-		for(int i = 17; i>=11; i--) {
+		for(int i = 17; i>=1; i--) {
 			path[path1c++] = new Coordinates(i,13);
 		}
-		System.out.println(path1c);
-		for(int i = 12; i<= 18; i++) {
+		for(int i = 2; i<= 18; i++) {
 			path[path1c++] = new Coordinates(i,13);
 		}
-		System.out.println(path1c);
-		for(int i = 12; i>=1; i--) {
+		for(int i = 10; i>=3; i--) {
 			path[path1c++] = new Coordinates(18, i);
 		}
-		System.out.println(path1c);
-		for(int i = 17; i>11; i--) {
+		for(int i = 17; i>1; i--) {
 			path[path1c++] = new Coordinates(i,1);
 		}
-		System.out.println(path1c);
 
-		Coordinates[] path2 = new Coordinates[4];
+		Coordinates[] path2 = new Coordinates[30];
 		
-		path2[0] = new Coordinates(9,6);
-		path2[1] = new Coordinates(9,7);
-		path2[2] = new Coordinates(9,8);
-		path2[3] = new Coordinates(9,7);
+		int path2c = 0;
+		for(int i = 2; i<14; i++) {
+			path2[path2c++] = new Coordinates(i,5);
+		}
+		for(int i = 6; i<10; i++) {
+			path2[path2c++] = new Coordinates(13,i);
+		}
+		for(int i = 12; i>1; i--) {
+			path2[path2c++] = new Coordinates(i,9);
+		}
+		path2[path2c++] = new Coordinates(2,8);
+		path2[path2c++] = new Coordinates(2,7);
+		path2[path2c++] = new Coordinates(2,6);
 
 		
 		super.setGuardPaths(0, path);

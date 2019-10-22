@@ -16,6 +16,7 @@ public class Menu extends BasicGameState{
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		// TODO Auto-generated method stub
+		ResourceManager.loadImage("burglar2.png");
 		burglar = ResourceManager.getImage("burglar2.png");
 	}
 

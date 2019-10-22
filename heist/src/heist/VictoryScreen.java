@@ -16,13 +16,14 @@ public class VictoryScreen extends BasicGameState{
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		// TODO Auto-generated method stub
+		ResourceManager.loadImage("moneyPile.png");
 		moneyPile = ResourceManager.getImage("moneyPile.png");
 	}
 
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		// TODO Auto-generated method stub
-		moneyPile.draw(250, 50);
+		moneyPile.draw(260, 50);
 		g.drawString("You won! Excellent heisting", 50, 275);
 		g.drawString("Press [enter] to return to the menu", 75, 325);
 		g.drawString("Press [escape] to close game", 75, 375);
